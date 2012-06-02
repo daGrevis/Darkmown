@@ -3,7 +3,7 @@
 /**
  * Markdown / Markdown Extra wrapper for Kohana 3.
  * 
- * @version 0.2
+ * @version 0.2.1
  * @author  daGrevis dagrevis@gmail.com
  */
 class Kohana_Darkmown {
@@ -16,11 +16,24 @@ class Kohana_Darkmown {
 	static $markdown = null;
 
 	/**
+	 * Last options from 2nd param.
+	 * 
+	 * @var array
+	 */
+	static $last_options_from_2nd_param = null;
+
+	/**
 	 * Inits Markdown or Markdown Extra based on options.
 	 * 
 	 * @param array $options Optional options
 	 */
 	static function init(array $options = null) {
+
+		/**
+		 * Updates last options from 2nd param.
+		 */
+		
+		self::$last_options_from_2nd_param = $options;
 
 		/**
 		 * Loads default option from config file.
@@ -48,11 +61,11 @@ class Kohana_Darkmown {
 		 * Loads Markdown or Markdown Extra.
 		 */
 
-		require Kohana::find_file('classes', 'markdown');
+		require_once Kohana::find_file('classes', 'markdown');
 
 		if ($options['markdown_extra']) {
 
-			require Kohana::find_file('classes', 'markdown/extra');
+			require_once Kohana::find_file('classes', 'markdown/extra');
 
 			self::$markdown = new Markdown_Extra($options);
 
@@ -74,10 +87,10 @@ class Kohana_Darkmown {
 	static function parse($text, array $options = null) {
 
 		/**
-		 * If instance isn't inited yet, do it!
+		 * If instance isn't inited yet or there are different options from current passed in, create / re-create instance.
 		 */
 		
-		if (!self::$markdown) {
+		if (!self::$markdown || ($options !== null && $options !== self::$last_options_from_2nd_param)) {
 
 			self::init($options);
 
